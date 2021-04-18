@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DSA 21 Battleground</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5/css/all.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/d3@6/dist/d3.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/d3-force@2/dist/d3-force.min.js"></script>
+  <style>
+    body {
+      background: linear-gradient(
+          rgba(0, 0, 0, 0.4),
+          rgba(0, 0, 0, 0.4)
+        ), url(green-lawn-grass-pattern-texture-repeating-seamless-vector-image-garden-86084538.jpg);
+      color: #FFE87C;
+      background-repeat: repeat;
+      background-size: 30%;
+    }
+
+    .stage {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      display: flex;
+    }
+
+    .stage p {
+      font-size: 3em;
+      margin: auto;
+    }
+
+    #overlay {
+      pointer-events: none;
+    }
+
+    .menu {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="node-name-toggle"></div>
+  <div id="node-size-range"></div>
+  <div id="preview" class="stage"></div>
+  <div id="help" class="stage"><p>将 JSON 数据文件拖至此处来加载</p></div>
+  <!--<canvas id="overlay" class="stage"></canvas>-->
+  <div class="menu">
+    <h1>DSA 21 Battleground <i class="fas fa-chess-rook"></i></h1>
+    <div class="controller">
+      Frame: <span class="frame">0</span>
+      <span><i class="fas fa-3x fa-play"></i></span>
+      <span><i class="fas fa-3x fa-pause"></i></span>
+    </div>
+  </div>
+  <script src="index.js"></script>
+</body>
+
+</html>
