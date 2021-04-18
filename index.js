@@ -242,6 +242,7 @@ function loadData(db) {
 
 function userAction(data, callback) {
   const { actions } = data;
+  if (!actions) return callback();
   const army = [];
   Object.values(actions).forEach((action, owner) => {
     for (let [from, to, radius] of action) {
