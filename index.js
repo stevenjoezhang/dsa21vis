@@ -71,7 +71,7 @@ function loadMap(data) {
     });
 
   d3.selectAll(".layout .fab").each(function(d, i) {
-    if (i === 0) {
+    if (d.owner === 0) {
       d.fx = width * 0.15;
       d.fy = height * 0.15;
     } else {
