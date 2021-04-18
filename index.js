@@ -199,9 +199,14 @@ function updateMap(data) {
     });
 }
 
+function updateFrame() {
+  document.querySelector(".frame").innerText = frame + 1 + "/" + database.length;
+}
+
 function loadData(db) {
   database = JSON.parse(db);
   frame = 0;
+  updateFrame();
   const data = database[0];
   document.getElementById("help").style.display = "none";
   const nodes = Object.keys(data.casualty_rate).map(node => {
@@ -231,11 +236,28 @@ function loadData(db) {
 document.body.addEventListener("dragover", event => event.preventDefault(), false);
 document.body.addEventListener("drop", dropHandler, false);
 
-document.querySelector(".fa-play").addEventListener("click", () => {
-  if (++frame === database.length) {
-    alert("Game Over!");
+document.querySelector(".fa-step-forward").addEventListener("click", () => {
+  if (!database.length) return;
+  if (frame === database.length - 1) {
+    alert("已经是最后一帧了！");
     return;
   }
-  document.querySelector(".frame").innerText = frame;
+  frame++;
+  updateFrame();
   updateMap(database[frame]);
+});
+
+document.querySelector(".fa-step-backward").addEventListener("click", () => {
+  if (!database.length) return;
+  if (frame === 0) {
+    alert("已经是第一帧了！");
+    return;
+  }
+  frame--;
+  updateFrame();
+  updateMap(database[frame]);
+});
+
+document.querySelector(".fa-question-circle").addEventListener("click", () => {
+  alert("可以拖动节点到固定位置。单击节点将其复位。颜色代表节点的所有者。数字代表兵力。点击对应的按钮来显示下一帧/上一帧。");
 });
