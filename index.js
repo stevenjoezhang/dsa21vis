@@ -8,9 +8,11 @@ const colors = {
   p1: "cyan",
   p2: "pink",
   road: "#FFE87C",
-  text: "red"
+  text: "red",
+  neutral: "white"
 };
-const playerColors = [colors.p1, colors.p2];
+const nodeColors = [colors.neutral, colors.p1, colors.p2];
+const armyColors = [colors.neutral, "blue", "red"];
 
 let frame = 0;
 let database = [];
@@ -58,7 +60,7 @@ function loadMap(data) {
     //.attr("font-family", "Font Awesome 5 Free")
     .classed("node", true)
     .attr("id", function(d) { return "node-" + d.name; })
-    .style("fill", function(d, i) { return playerColors[d.owner]; })
+    .style("fill", function(d, i) { return nodeColors[d.owner + 1]; })
     .on("click", onclick)
     .call(d3.drag()
       .on("start", dragstarted)
@@ -87,7 +89,7 @@ function loadMap(data) {
     .attr("font-size", "2em")
     //.attr("dominant-baseline", "top")
     .attr("text-anchor", "middle")
-    .style("fill", function(d, i) { return playerColors[d.owner]; })
+    .style("fill", function(d, i) { return nodeColors[d.owner + 1]; })
     .text(function(d) {
       if (d.power) return Math.max(...d.power).toFixed(2);
       return 0;
@@ -98,9 +100,9 @@ function loadMap(data) {
     .force("x", d3.forceX(width / 2).strength(0.1))
     .force("y", d3.forceY(height / 2).strength(0.1))
     .force("center", d3.forceCenter(width / 2, height / 2))
-    .force("link", d3.forceLink().distance(width / 5).links(data.links))
+    .force("link", d3.forceLink().distance(width / 8).links(data.links))
     .force("collide", d3.forceCollide())
-    .force("charge", d3.forceManyBody().strength(-200))
+    .force("charge", d3.forceManyBody().strength(-2000))
     .on("tick", ticked);
 
   function ticked() {
@@ -188,11 +190,11 @@ function updateMap(data) {
 
   d3.select(".layout")
     .selectAll(".node")
-    .style("fill", function(d, i) { return playerColors[data.owner[i + 1]]; });
+    .style("fill", function(d, i) { return nodeColors[data.owner[i + 1] + 1]; });
 
   d3.select(".layout")
     .selectAll(".text")
-    .style("fill", function(d, i) { return playerColors[data.owner[i + 1]]; })
+    .style("fill", function(d, i) { return nodeColors[data.owner[i + 1] + 1]; })
     .text(function(d, i) {
       if (data.power[i + 1]) return Math.max(...data.power[i + 1]).toFixed(2);
       return 0;
@@ -205,6 +207,7 @@ function updateFrame() {
 
 function loadData(db) {
   database = JSON.parse(db);
+  console.log(database);
   frame = 0;
   updateFrame();
   const data = database[0];
@@ -212,7 +215,7 @@ function loadData(db) {
   const nodes = Object.keys(data.casualty_rate).map(node => {
     return {
       name: node,
-      type: "Fort",
+      type: data.owner[node] === -1 ? "Fort" : "Base",
       owner: data.owner[node],
       power: data.power[node]
     };
@@ -233,6 +236,52 @@ function loadData(db) {
   });
 }
 
+function userAction(data, callback) {
+  const { actions } = data;
+  const army = [];
+  Object.values(actions).forEach((action, owner) => {
+    for (let [from, to, radius] of action) {
+
+      console.log(from, to, radius);
+      x1 = d3.select("#node-" + from).attr("x");
+      x2 = d3.select("#node-" + to).attr("x");
+      y1 = d3.select("#node-" + from).attr("y");
+      y2 = d3.select("#node-" + to).attr("y");
+      army.push({
+        x1,
+        x2,
+        y1,
+        y2,
+        radius,
+        owner
+      });
+    }
+  });
+
+  const node = d3.select(".layout")
+    .selectAll(".army")
+    .data(army)
+    .enter()
+    .append("text")
+    .text("\uf441")
+    .attr("font-size", function(d) {
+      if (d.radius < 5) d.radius = 5;
+      if (d.radius > 100) d.radius = 100;
+      return Math.log(d.radius) + "em";
+    })
+    .attr("text-anchor", "middle")
+    .classed("fas", true)
+    .style("fill", function(d, i) { return armyColors[d.owner + 1]; })
+    .attr("x", function(d) { return d.x1; })
+    .attr("y", function(d) { return d.y1; })
+    .transition()
+    .duration(5000)
+    .attr("x", function(d) { return d.x2; })
+    .attr("y", function(d) { return d.y2; })
+    .remove()
+    .on("end", callback);
+}
+
 document.body.addEventListener("dragover", event => event.preventDefault(), false);
 document.body.addEventListener("drop", dropHandler, false);
 
@@ -244,7 +293,9 @@ document.querySelector(".fa-step-forward").addEventListener("click", () => {
   }
   frame++;
   updateFrame();
-  updateMap(database[frame]);
+  userAction(database[frame], () => {
+    updateMap(database[frame]);
+  });
 });
 
 document.querySelector(".fa-step-backward").addEventListener("click", () => {
