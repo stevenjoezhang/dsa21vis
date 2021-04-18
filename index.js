@@ -54,7 +54,7 @@ function loadMap(data) {
     .enter()
     .append("text")
     .text(function(d) { return d.type === "Base" ? "\uf286" : "\uf447"; })
-    .attr("font-size", "5em")
+    .style("font-size", "5em")
     //.attr("dominant-baseline", "middle")
     .attr("text-anchor", "middle")
     //.attr("font-family", "Font Awesome 5 Free")
@@ -86,7 +86,7 @@ function loadMap(data) {
     .enter()
     .append("text")
     .classed("text", true)
-    .attr("font-size", "2em")
+    .style("font-size", "2em")
     //.attr("dominant-baseline", "top")
     .attr("text-anchor", "middle")
     .style("fill", function(d, i) { return nodeColors[d.owner + 1]; })
@@ -190,10 +190,14 @@ function updateMap(data) {
 
   d3.select(".layout")
     .selectAll(".node")
+    .transition()
+    .duration(1000)
     .style("fill", function(d, i) { return nodeColors[data.owner[i + 1] + 1]; });
 
   d3.select(".layout")
     .selectAll(".text")
+    .transition()
+    .duration(1000)
     .style("fill", function(d, i) { return nodeColors[data.owner[i + 1] + 1]; })
     .text(function(d, i) {
       if (data.power[i + 1]) return Math.max(...data.power[i + 1]).toFixed(2);
@@ -264,20 +268,26 @@ function userAction(data, callback) {
     .enter()
     .append("text")
     .text("\uf441")
-    .attr("font-size", function(d) {
-      if (d.radius < 5) d.radius = 5;
-      if (d.radius > 100) d.radius = 100;
-      return Math.log(d.radius) + "em";
-    })
-    .attr("text-anchor", "middle")
+    .style("font-size", "0em")
     .classed("fas", true)
     .style("fill", function(d, i) { return armyColors[d.owner + 1]; })
     .attr("x", function(d) { return d.x1; })
     .attr("y", function(d) { return d.y1; })
     .transition()
-    .duration(5000)
+    .duration(500)
+    .style("font-size", function(d) {
+      if (d.radius < 5) d.radius = 5;
+      if (d.radius > 100) d.radius = 100;
+      return Math.log(d.radius) + "em";
+    })
+    .attr("text-anchor", "middle")
+    .transition()
+    .duration(4000)
     .attr("x", function(d) { return d.x2; })
     .attr("y", function(d) { return d.y2; })
+    .transition()
+    .duration(500)
+    .style("font-size", "0em")
     .remove()
     .on("end", callback);
 }
