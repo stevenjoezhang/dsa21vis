@@ -3,16 +3,9 @@ let height = window.innerHeight;
 
 let node_size = 5;
 
-//const colors = d3.scaleOrdinal(d3.schemeCategory10).domain([0, 9]);
-const colors = {
-  p1: "rgb(108, 914, 192)",
-  p2: "rgb(175, 95, 61)",
-  road: "#FFE87C",
-  text: "red",
-  neutral: "white"
-};
-const nodeColors = [colors.road, colors.p1, colors.p2];
-const armyColors = [null, "cyan", "pink"];
+const colors = [
+  ['#a5d5d8', '#ffffe0', '#ffbcaf'], ['#00429d', '#4771b2', '#73a2c6'], ["#93003a", "#cf3759", "#f4777f"]
+];
 
 let frame = 0;
 let database = [];
@@ -37,7 +30,7 @@ function loadMap(data) {
     .append("line")
     .classed("link", true)
     .attr("stroke-width", 10)
-    .attr("stroke", nodeColors[0]);
+    .attr("stroke", colors[0][1]);
 
   const circle = d3.select(".layout")
     .selectAll(".circle")
@@ -46,7 +39,12 @@ function loadMap(data) {
     .append("circle")
     .attr("r", 15)
     .classed("circle", true)
-    .style("fill", function(d, i) { return nodeColors[d.owner + 1]; });
+    .style("fill", function(d, i) { return colors[d.owner + 1][0]; })
+    .on("click", onclick)
+    .call(d3.drag()
+      .on("start", dragstarted)
+      .on("drag", dragged)
+      .on("end", dragended));
 
   const node = d3.select(".layout")
     .selectAll(".node")
@@ -60,12 +58,7 @@ function loadMap(data) {
     //.attr("font-family", "Font Awesome 5 Free")
     .classed("node", true)
     .attr("id", function(d) { return "node-" + d.name; })
-    .style("fill", function(d, i) { return nodeColors[d.owner + 1]; })
-    .on("click", onclick)
-    .call(d3.drag()
-      .on("start", dragstarted)
-      .on("drag", dragged)
-      .on("end", dragended))
+    .style("fill", function(d, i) { return colors[d.owner + 1][0]; })
     .each(function(d) {
       d3.select(this).classed(d.type === "Base" ? "fab" : "fas", true);
     });
@@ -89,7 +82,7 @@ function loadMap(data) {
     .style("font-size", "2em")
     //.attr("dominant-baseline", "top")
     .attr("text-anchor", "middle")
-    .style("fill", function(d, i) { return nodeColors[d.owner + 1]; })
+    .style("fill", function(d, i) { return colors[d.owner + 1][0]; })
     .text(function(d) {
       if (d.power) return Math.max(...d.power).toFixed(2);
       return 0;
@@ -192,19 +185,19 @@ function updateMap(data) {
     .selectAll(".node")
     .transition()
     .duration(1000)
-    .style("fill", function(d, i) { return nodeColors[data.owner[i + 1] + 1]; });
+    .style("fill", function(d, i) { return colors[data.owner[i + 1] + 1][0]; });
 
   d3.select(".layout")
     .selectAll(".circle")
     .transition()
     .duration(1000)
-    .style("fill", function(d, i) { return nodeColors[data.owner[i + 1] + 1]; });
+    .style("fill", function(d, i) { return colors[data.owner[i + 1] + 1][0]; });
 
   d3.select(".layout")
     .selectAll(".text")
     .transition()
     .duration(1000)
-    .style("fill", function(d, i) { return nodeColors[data.owner[i + 1] + 1]; })
+    .style("fill", function(d, i) { return colors[data.owner[i + 1] + 1][0]; })
     .textTween(function(d, i) {
       const f = data.power[i + 1] ? Math.max(...data.power[i + 1]) : 0;
       const interpolate = d3.interpolate(d3.select(this).text(), f);
@@ -216,9 +209,9 @@ function updateMap(data) {
     .transition()
     .duration(1000)
     .attr("stroke", function(d, i) {
-      if (data.owner[d.source.name] === 0 && data.owner[d.target.name] === 0) return nodeColors[1];
-      if (data.owner[d.source.name] === 1 && data.owner[d.target.name] === 1) return nodeColors[2];
-      return nodeColors[0];
+      if (data.owner[d.source.name] === 0 && data.owner[d.target.name] === 0) return colors[1][1];
+      if (data.owner[d.source.name] === 1 && data.owner[d.target.name] === 1) return colors[2][1];
+      return colors[0][1];
     });
 }
 
@@ -288,8 +281,8 @@ function userAction(data, callback) {
     .text("\uf135")
     .style("font-size", "0em")
     .classed("fas", true)
-    .style("fill", function(d, i) { return armyColors[d.owner + 1]; })
-    .style("fill-opacity", "0.5")
+    .style("fill", function(d, i) { return colors[d.owner + 1][2]; })
+    .style("fill-opacity", "0.7")
     .attr("x", function(d) { return d.x1; })
     .attr("y", function(d) { return d.y1; })
     .transition()
