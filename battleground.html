@@ -32,19 +32,19 @@
       margin: auto;
     }
 
-    #overlay {
-      pointer-events: none;
-    }
-
     .menu {
       padding: 0 20px;
       position: fixed;
       top: 0;
+    }
+
+    .menu-left {
       left: 0;
+      pointer-events: none;
+    }
+
+    .controller {
       right: 0;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
     }
   </style>
 </head>
@@ -54,15 +54,14 @@
   <div id="node-size-range"></div>
   <div id="preview" class="stage"></div>
   <div id="help" class="stage"><p>将 JSON 数据文件拖至此处来加载</p></div>
-  <!--<canvas id="overlay" class="stage"></canvas>-->
-  <div class="menu">
+  <div class="menu menu-left">
     <h1>DSA 21 Battleground <i class="fas fa-chess-rook"></i></h1>
-    <div class="controller">
-      Frame: <span class="frame">0/0</span>
-      <span><i class="fas fa-3x fa-step-forward"></i></span>
-      <span><i class="fas fa-3x fa-step-backward"></i></span>
-      <span><i class="fas fa-3x fa-question-circle"></i></span>
-    </div>
+  </div>
+  <div class="menu controller">
+    Frame: <span class="frame">0/0</span>
+    <span><i class="fas fa-3x fa-step-forward"></i></span>
+    <span><i class="fas fa-3x fa-step-backward"></i></span>
+    <span><i class="fas fa-3x fa-question-circle"></i></span>
   </div>
   <script src="index.js"></script>
 </body>

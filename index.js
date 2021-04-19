@@ -312,11 +312,7 @@ document.body.addEventListener("dragover", event => event.preventDefault(), fals
 document.body.addEventListener("drop", dropHandler, false);
 
 function forward() {
-  if (!database.length) return;
-  if (frame === database.length - 1) {
-    alert("已经是最后一帧了！");
-    return;
-  }
+  if (!database.length || frame === database.length - 1) return;
   frame++;
   updateFrame();
   userAction(database[frame], () => {
@@ -326,11 +322,7 @@ function forward() {
 document.querySelector(".fa-step-forward").addEventListener("click", forward);
 
 function backward() {
-  if (!database.length) return;
-  if (frame === 0) {
-    alert("已经是第一帧了！");
-    return;
-  }
+  if (!database.length || frame === 0) return;
   frame--;
   updateFrame();
   updateMap(database[frame]);
