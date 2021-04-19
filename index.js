@@ -64,6 +64,7 @@ function loadMap(data) {
     });
 
   d3.selectAll(".layout .fab").each(function(d, i) {
+    if (d.fx || d.fy) return;
     if (d.owner === 0) {
       d.fx = width * 0.15;
       d.fy = height * 0.15;
@@ -227,11 +228,15 @@ function loadData(db) {
   const data = database[0];
   document.getElementById("help").style.display = "none";
   const nodes = Object.keys(data.casualty_rate).map(node => {
+    const fx = data.xy ? (data.xy[node][0] / 4 + 0.5) * width * 0.8 + width * 0.1 : null;
+    const fy = data.xy ? (data.xy[node][1] / 4 + 0.5) * height * 0.8 + height * 0.1 : null;
     return {
       name: node,
       type: data.owner[node] === -1 ? "Fort" : "Base",
       owner: data.owner[node],
-      power: data.power[node]
+      power: data.power[node],
+      fx,
+      fy
     };
   });
   const links = [];
