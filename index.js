@@ -227,7 +227,7 @@ function loadData(db) {
   updateFrame();
   const data = database[0];
   document.getElementById("help").style.display = "none";
-  const nodes = Object.keys(data.casualty_rate).map(node => {
+  const nodes = Object.keys(data.owner).map(node => {
     const fx = data.xy ? (data.xy[node][0] / 4 + 0.5) * width * 0.8 + width * 0.1 : null;
     const fy = data.xy ? (data.xy[node][1] / 4 + 0.5) * height * 0.8 + height * 0.1 : null;
     return {
