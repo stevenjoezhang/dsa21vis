@@ -4,11 +4,17 @@ let height = window.innerHeight;
 let node_size = 5;
 
 const colors = [
-  ['#a5d5d8', '#ffffe0', '#ffbcaf'], ['#00429d', '#4771b2', '#73a2c6'], ["#93003a", "#cf3759", "#f4777f"]
+  ['#93c4d2', '#b9e5dd', '#ffd3bf', '#ffa59e'], ['#00429d', '#3761ab', '#5681b9', '#73a2c6'], ['#f4777f', '#dd4c65', '#be214d', '#93003a']
 ];
 
 let frame = 0;
 let database = [];
+
+function normalize(r, factor = 1) {
+  if (r < 5) r = 5;
+  if (r > 100) r = 100;
+  return factor * Math.log(r) + "em";
+}
 
 d3.select("#preview")
   .append("svg")
@@ -37,7 +43,10 @@ function loadMap(data) {
     .data(nodes)
     .enter()
     .append("circle")
-    .attr("r", 15)
+    .attr("r", function(d, i) {
+      const r = d.power ? Math.max(...d.power) : 0;
+      return normalize(r);
+    })
     .classed("circle", true)
     .style("fill", function(d, i) { return colors[d.owner + 1][0]; })
     .on("click", onclick)
@@ -83,10 +92,9 @@ function loadMap(data) {
     .style("font-size", "2em")
     //.attr("dominant-baseline", "top")
     .attr("text-anchor", "middle")
-    .style("fill", function(d, i) { return colors[d.owner + 1][0]; })
+    .style("fill", function(d, i) { return colors[d.owner + 1][2]; })
     .text(function(d) {
-      if (d.power) return Math.max(...d.power).toFixed(2);
-      return 0;
+      return d.power ? Math.max(...d.power).toFixed(2) : 0;
     });
 
   const simulation = d3.forceSimulation(nodes)
@@ -112,7 +120,7 @@ function loadMap(data) {
       .attr("cy", function(d) { return d.y; });
 
     text.attr("x", function(d) { return d.x; })
-      .attr("y", function(d) { return d.y + 50; });
+      .attr("y", function(d) { return d.y + 10; });
   }
 
   function onclick(event, d) {
@@ -142,29 +150,6 @@ function loadMap(data) {
   }
 }
 
-document.querySelector("#node-size-range").addEventListener("input", event => {
-  const factor = event.target.value / 50;
-  const node_size = 2.5 * Math.pow(2, factor);
-  d3.selectAll(".layout .node")
-    .attr("r", node_size);
-  d3.selectAll(".layout .text")
-    .attr("x", d => d.x + 1.2 * node_size)
-    .attr("y", d => d.y - 1.2 * node_size);
-  d3.selectAll(".layout .line")
-    .attr("stroke-width", 0.5 * Math.pow(2, factor));
-});
-
-document.querySelector("#node-name-toggle").addEventListener("click", event => {
-  const toggle = event.currentTarget.querySelector("i");
-  if (toggle.classList.contains("fa-toggle-off")) {
-    toggle.classList.replace("fa-toggle-off", "fa-toggle-on");
-    document.querySelector(".layout").style.setProperty("--display", "block");
-  } else {
-    toggle.classList.replace("fa-toggle-on", "fa-toggle-off");
-    document.querySelector(".layout").style.setProperty("--display", "none");
-  }
-});
-
 function dropHandler(ev) {
   // Prevent default behavior (Prevent file from being opened)
   ev.preventDefault();
@@ -192,13 +177,17 @@ function updateMap(data) {
     .selectAll(".circle")
     .transition()
     .duration(1000)
+    .attr("r", function(d, i) {
+      const r = data.power[i + 1] ? Math.max(...data.power[i + 1]) : 0;
+      return normalize(r);
+    })
     .style("fill", function(d, i) { return colors[data.owner[i + 1] + 1][0]; });
 
   d3.select(".layout")
     .selectAll(".text")
     .transition()
     .duration(1000)
-    .style("fill", function(d, i) { return colors[data.owner[i + 1] + 1][0]; })
+    .style("fill", function(d, i) { return colors[data.owner[i + 1] + 1][2]; })
     .textTween(function(d, i) {
       const f = data.power[i + 1] ? Math.max(...data.power[i + 1]) : 0;
       const interpolate = d3.interpolate(d3.select(this).text(), f);
@@ -292,9 +281,7 @@ function userAction(data) {
     .transition()
     .duration(500)
     .style("font-size", function(d) {
-      if (d.radius < 5) d.radius = 5;
-      if (d.radius > 100) d.radius = 100;
-      return Math.log(d.radius) + "em";
+      return normalize(d.radius);
     })
     .attr("text-anchor", "middle")
     .transition()
