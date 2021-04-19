@@ -221,7 +221,7 @@ function updateFrame() {
 }
 
 function loadData(db) {
-  database = JSON.parse(db);
+  database = JSON.parse(db).flat();
   console.log(database);
   frame = 0;
   updateFrame();
@@ -255,7 +255,7 @@ function loadData(db) {
   });
 }
 
-function userAction(data, callback) {
+function userAction(data) {
   const army = [];
   Object.values(data.actions).forEach((action, owner) => {
     for (let [from, to, radius] of action) {
@@ -275,7 +275,7 @@ function userAction(data, callback) {
       });
     }
   });
-  if (army.length === 0) return callback();
+  if (army.length === 0) return updateMap(data);
 
   const node = d3.select(".layout")
     .selectAll(".army")
@@ -305,7 +305,9 @@ function userAction(data, callback) {
     .duration(500)
     .style("font-size", "0em")
     .remove()
-    .on("end", callback);
+    .on("end", () => {
+      updateMap(data);
+    });
 }
 
 document.body.addEventListener("dragover", event => event.preventDefault(), false);
@@ -315,9 +317,7 @@ function forward() {
   if (!database.length || frame === database.length - 1) return;
   frame++;
   updateFrame();
-  userAction(database[frame], () => {
-    updateMap(database[frame]);
-  });
+  userAction(database[frame]);
 }
 document.querySelector(".fa-step-forward").addEventListener("click", forward);
 
