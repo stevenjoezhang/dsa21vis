@@ -307,7 +307,7 @@ function userAction(data, callback) {
 document.body.addEventListener("dragover", event => event.preventDefault(), false);
 document.body.addEventListener("drop", dropHandler, false);
 
-document.querySelector(".fa-step-forward").addEventListener("click", () => {
+function forward() {
   if (!database.length) return;
   if (frame === database.length - 1) {
     alert("已经是最后一帧了！");
@@ -318,9 +318,10 @@ document.querySelector(".fa-step-forward").addEventListener("click", () => {
   userAction(database[frame], () => {
     updateMap(database[frame]);
   });
-});
+}
+document.querySelector(".fa-step-forward").addEventListener("click", forward);
 
-document.querySelector(".fa-step-backward").addEventListener("click", () => {
+function backward() {
   if (!database.length) return;
   if (frame === 0) {
     alert("已经是第一帧了！");
@@ -329,8 +330,20 @@ document.querySelector(".fa-step-backward").addEventListener("click", () => {
   frame--;
   updateFrame();
   updateMap(database[frame]);
-});
+}
+document.querySelector(".fa-step-backward").addEventListener("click", backward);
 
 document.querySelector(".fa-question-circle").addEventListener("click", () => {
-  alert("可以拖动节点到固定位置。单击节点将其复位。颜色代表节点的所有者。数字代表兵力。点击对应的按钮来显示下一帧/上一帧。");
+  alert("可以拖动节点到固定位置。单击节点将其复位。颜色代表节点的所有者。数字代表兵力。点击对应的按钮或键盘上的左、右箭头键来显示上一帧/下一帧。");
+});
+
+document.addEventListener("keydown", event => {
+  switch (event.key) {
+    case "ArrowRight":
+      forward();
+      break;
+    case "ArrowLeft":
+      backward();
+      break;
+  }
 });
