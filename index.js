@@ -256,13 +256,11 @@ function loadData(db) {
 }
 
 function userAction(data, callback) {
-  const { actions } = data;
-  if (!actions) return callback();
   const army = [];
-  Object.values(actions).forEach((action, owner) => {
+  Object.values(data.actions).forEach((action, owner) => {
     for (let [from, to, radius] of action) {
 
-      console.log(from, to, radius);
+      //console.log(from, to, radius);
       x1 = d3.select("#node-" + from).attr("x");
       x2 = d3.select("#node-" + to).attr("x");
       y1 = d3.select("#node-" + from).attr("y");
@@ -277,6 +275,7 @@ function userAction(data, callback) {
       });
     }
   });
+  if (army.length === 0) return callback();
 
   const node = d3.select(".layout")
     .selectAll(".army")
