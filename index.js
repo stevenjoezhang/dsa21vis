@@ -5,14 +5,14 @@ let node_size = 5;
 
 //const colors = d3.scaleOrdinal(d3.schemeCategory10).domain([0, 9]);
 const colors = {
-  p1: "cyan",
-  p2: "pink",
+  p1: "rgb(108, 914, 192)",
+  p2: "rgb(175, 95, 61)",
   road: "#FFE87C",
   text: "red",
   neutral: "white"
 };
-const nodeColors = [colors.neutral, colors.p1, colors.p2];
-const armyColors = [colors.neutral, "blue", "red"];
+const nodeColors = [colors.road, colors.p1, colors.p2];
+const armyColors = [null, "cyan", "pink"];
 
 let frame = 0;
 let database = [];
@@ -35,9 +35,9 @@ function loadMap(data) {
     .data(links)
     .enter()
     .append("line")
-    .classed("line", true)
-    .attr("stroke-width", 20)
-    .attr("stroke", colors.road);
+    .classed("link", true)
+    .attr("stroke-width", 10)
+    .attr("stroke", nodeColors[0]);
 
   const circle = d3.select(".layout")
     .selectAll(".circle")
@@ -46,14 +46,14 @@ function loadMap(data) {
     .append("circle")
     .attr("r", 15)
     .classed("circle", true)
-    .style("fill", colors.road);
+    .style("fill", function(d, i) { return nodeColors[d.owner + 1]; });
 
   const node = d3.select(".layout")
     .selectAll(".node")
     .data(nodes)
     .enter()
     .append("text")
-    .text(function(d) { return d.type === "Base" ? "\uf286" : "\uf447"; })
+    //.text(function(d) { return d.type === "Base" ? "\uf286" : "\uf447"; })
     .style("font-size", "5em")
     //.attr("dominant-baseline", "middle")
     .attr("text-anchor", "middle")
@@ -195,13 +195,30 @@ function updateMap(data) {
     .style("fill", function(d, i) { return nodeColors[data.owner[i + 1] + 1]; });
 
   d3.select(".layout")
+    .selectAll(".circle")
+    .transition()
+    .duration(1000)
+    .style("fill", function(d, i) { return nodeColors[data.owner[i + 1] + 1]; });
+
+  d3.select(".layout")
     .selectAll(".text")
     .transition()
     .duration(1000)
     .style("fill", function(d, i) { return nodeColors[data.owner[i + 1] + 1]; })
-    .text(function(d, i) {
-      if (data.power[i + 1]) return Math.max(...data.power[i + 1]).toFixed(2);
-      return 0;
+    .textTween(function(d, i) {
+      const f = data.power[i + 1] ? Math.max(...data.power[i + 1]) : 0;
+      const interpolate = d3.interpolate(d3.select(this).text(), f);
+      return function(t) { return interpolate(t).toFixed(2); };
+    });
+
+  d3.select(".layout")
+    .selectAll(".link")
+    .transition()
+    .duration(1000)
+    .attr("stroke", function(d, i) {
+      if (data.owner[d.source.name] === 0 && data.owner[d.target.name] === 0) return nodeColors[1];
+      if (data.owner[d.source.name] === 1 && data.owner[d.target.name] === 1) return nodeColors[2];
+      return nodeColors[0];
     });
 }
 
@@ -268,10 +285,11 @@ function userAction(data, callback) {
     .data(army)
     .enter()
     .append("text")
-    .text("\uf441")
+    .text("\uf135")
     .style("font-size", "0em")
     .classed("fas", true)
     .style("fill", function(d, i) { return armyColors[d.owner + 1]; })
+    .style("fill-opacity", "0.5")
     .attr("x", function(d) { return d.x1; })
     .attr("y", function(d) { return d.y1; })
     .transition()
