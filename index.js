@@ -10,6 +10,10 @@ const colors = [
 let frame = 0;
 let database = [];
 
+const TRANSITION_COLOR_TEXT = 500;
+const TRANSITION_ARMY_FADE = 250;
+const TRANSITION_ARMY_MOVE = 1000;
+
 function normalize(r, factor = 1) {
   if (r < 5) r = 5;
   if (r > 100) r = 100;
@@ -170,13 +174,13 @@ function updateMap(data) {
   d3.select(".layout")
     .selectAll(".node")
     .transition()
-    .duration(1000)
+    .duration(TRANSITION_COLOR_TEXT)
     .style("fill", function(d, i) { return colors[data.owner[i + 1] + 1][0]; });
 
   d3.select(".layout")
     .selectAll(".circle")
     .transition()
-    .duration(1000)
+    .duration(TRANSITION_COLOR_TEXT)
     .attr("r", function(d, i) {
       const r = data.power[i + 1] ? Math.max(...data.power[i + 1]) : 0;
       return normalize(r);
@@ -186,7 +190,7 @@ function updateMap(data) {
   d3.select(".layout")
     .selectAll(".text")
     .transition()
-    .duration(1000)
+    .duration(TRANSITION_COLOR_TEXT)
     .style("fill", function(d, i) { return colors[data.owner[i + 1] + 1][2]; })
     .textTween(function(d, i) {
       const f = data.power[i + 1] ? Math.max(...data.power[i + 1]) : 0;
@@ -197,7 +201,7 @@ function updateMap(data) {
   d3.select(".layout")
     .selectAll(".link")
     .transition()
-    .duration(1000)
+    .duration(TRANSITION_COLOR_TEXT)
     .attr("stroke", function(d, i) {
       if (data.owner[d.source.name] === 0 && data.owner[d.target.name] === 0) return colors[1][1];
       if (data.owner[d.source.name] === 1 && data.owner[d.target.name] === 1) return colors[2][1];
@@ -279,17 +283,17 @@ function userAction(data) {
     .attr("x", function(d) { return d.x1; })
     .attr("y", function(d) { return d.y1; })
     .transition()
-    .duration(500)
+    .duration(TRANSITION_ARMY_FADE)
     .style("font-size", function(d) {
       return normalize(d.radius);
     })
     .attr("text-anchor", "middle")
     .transition()
-    .duration(4000)
+    .duration(TRANSITION_ARMY_MOVE)
     .attr("x", function(d) { return d.x2; })
     .attr("y", function(d) { return d.y2; })
     .transition()
-    .duration(500)
+    .duration(TRANSITION_ARMY_FADE)
     .style("font-size", "0em")
     .remove()
     .on("end", () => {
