@@ -48,10 +48,11 @@ function loadMap(data) {
     .enter()
     .append("circle")
     .attr("r", function(d, i) {
-      const r = d.power ? Math.max(...d.power) : 0;
+      const r = Math.max(...d.power);
       return normalize(r);
     })
     .classed("circle", true)
+    .style("fill", function(d, i) { return colors[d.owner + 1][0]; })
     .on("click", onclick)
     .call(d3.drag()
       .on("start", dragstarted)
@@ -70,6 +71,7 @@ function loadMap(data) {
     //.attr("font-family", "Font Awesome 5 Free")
     .classed("node", true)
     .attr("id", function(d) { return "node-" + d.name; })
+    .style("fill", function(d, i) { return colors[d.owner + 1][0]; })
     .each(function(d) {
       d3.select(this).classed(d.type === "Base" ? "fab" : "fas", true);
     });
@@ -94,8 +96,9 @@ function loadMap(data) {
     .style("font-size", "2em")
     //.attr("dominant-baseline", "top")
     .attr("text-anchor", "middle")
+    .style("fill", function(d, i) { return colors[d.owner + 1][2]; })
     .text(function(d) {
-      return d.power ? Math.max(...d.power).toFixed(2) : 0;
+      return Math.max(...d.power).toFixed(2);
     });
 
   const simulation = d3.forceSimulation(nodes)
@@ -179,7 +182,7 @@ function updateMap(data) {
     .transition()
     .duration(TRANSITION_COLOR_TEXT)
     .attr("r", function(d, i) {
-      const r = data.power[i + 1] ? Math.max(...data.power[i + 1]) : 0;
+      const r = Math.max(...data.power[i + 1]);
       return normalize(r);
     })
     .style("fill", function(d, i) { return colors[data.owner[i + 1] + 1][0]; });
@@ -190,7 +193,7 @@ function updateMap(data) {
     .duration(TRANSITION_COLOR_TEXT)
     .style("fill", function(d, i) { return colors[data.owner[i + 1] + 1][2]; })
     .textTween(function(d, i) {
-      const f = data.power[i + 1] ? Math.max(...data.power[i + 1]) : 0;
+      const f = Math.max(...data.power[i + 1]);
       const interpolate = d3.interpolate(d3.select(this).text(), f);
       return function(t) { return interpolate(t).toFixed(2); };
     });
@@ -224,6 +227,8 @@ function loadData(db) {
     return {
       name: node,
       type: database[0].owner[node] === -1 ? "Fort" : "Base",
+      owner: database[0].owner[node],
+      power: database[0].power[node],
       fx,
       fy
     };
@@ -241,7 +246,6 @@ function loadData(db) {
     nodes,
     links
   });
-  updateMap(database[frame]);
 }
 
 function userAction(data) {
