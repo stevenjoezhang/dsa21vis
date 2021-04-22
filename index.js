@@ -25,8 +25,8 @@ d3.select("#preview")
   .attr("width", width)
   .attr("height", height)
   .classed("layout", true)
-  .on("dblclick", () => {})
-  .on("click", () => {});
+  .on("dblclick", () => { })
+  .on("click", () => { });
 
 function loadMap(data) {
   localStorage.setItem("select-data", data);
@@ -163,7 +163,7 @@ function dropHandler(ev) {
     const file = ev.dataTransfer.files[0];
     const reader = new FileReader();
     reader.onload = function(event) {
-      loadData(event.target.result);
+      loadData(JSON.parse(event.target.result));
     };
     reader.readAsText(file);
   }
@@ -214,7 +214,6 @@ function updateFrame() {
 }
 
 function loadData(db) {
-  db = JSON.parse(db);
   database = db.history.flat();
   console.log(database);
   frame = 0;
@@ -334,3 +333,13 @@ document.addEventListener("keydown", event => {
       break;
   }
 });
+
+if (location.hostname === "localhost") {
+
+  fetch("/battle.json")
+    .then(response => response.json())
+    .then(data => loadData(data))
+    .catch(() => { });
+
+}
+
