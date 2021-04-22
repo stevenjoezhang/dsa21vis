@@ -52,7 +52,6 @@ function loadMap(data) {
       return normalize(r);
     })
     .classed("circle", true)
-    .style("fill", function(d, i) { return colors[d.owner + 1][0]; })
     .on("click", onclick)
     .call(d3.drag()
       .on("start", dragstarted)
@@ -71,7 +70,6 @@ function loadMap(data) {
     //.attr("font-family", "Font Awesome 5 Free")
     .classed("node", true)
     .attr("id", function(d) { return "node-" + d.name; })
-    .style("fill", function(d, i) { return colors[d.owner + 1][0]; })
     .each(function(d) {
       d3.select(this).classed(d.type === "Base" ? "fab" : "fas", true);
     });
@@ -96,7 +94,6 @@ function loadMap(data) {
     .style("font-size", "2em")
     //.attr("dominant-baseline", "top")
     .attr("text-anchor", "middle")
-    .style("fill", function(d, i) { return colors[d.owner + 1][2]; })
     .text(function(d) {
       return d.power ? Math.max(...d.power).toFixed(2) : 0;
     });
@@ -214,38 +211,37 @@ function updateFrame() {
 }
 
 function loadData(db) {
-  database = JSON.parse(db).flat();
+  db = JSON.parse(db);
+  database = db.history.flat();
   console.log(database);
   frame = 0;
   updateFrame();
-  const data = database[0];
+  const graph = db.map;
   document.getElementById("help").style.display = "none";
-  const nodes = Object.keys(data.owner).map(node => {
-    const fx = data.xy ? (data.xy[node][0] / 4 + 0.5) * width * 0.8 + width * 0.1 : null;
-    const fy = data.xy ? (data.xy[node][1] / 4 + 0.5) * height * 0.8 + height * 0.1 : null;
+  const nodes = Object.keys(database[0].owner).map(node => {
+    const fx = graph.xy ? (graph.xy[node][0] / 4 + 0.5) * width * 0.8 + width * 0.1 : null;
+    const fy = graph.xy ? (graph.xy[node][1] / 4 + 0.5) * height * 0.8 + height * 0.1 : null;
     return {
       name: node,
-      type: data.owner[node] === -1 ? "Fort" : "Base",
-      owner: data.owner[node],
-      power: data.power[node],
+      type: database[0].owner[node] === -1 ? "Fort" : "Base",
       fx,
       fy
     };
   });
   const links = [];
-  Object.keys(data.edges).forEach(source => {
-    data.edges[source].forEach(target => {
+  Object.keys(graph.edges).forEach(source => {
+    graph.edges[source].forEach(target => {
       if (target > source) links.push({
         source: source - 1,
         target: target - 1
       });
     });
   });
-  console.log(data);
   loadMap({
     nodes,
     links
   });
+  updateMap(database[frame]);
 }
 
 function userAction(data) {
