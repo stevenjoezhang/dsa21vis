@@ -167,6 +167,7 @@ function dropHandler(ev) {
         loadData(JSON.parse(event.target.result));
       } else {
         document.body.style.setProperty("background-image", `url(${event.target.result})`);
+        localStorage.setItem("background-image", `url(${event.target.result})`);
       }
     };
     if (file.type === "application/json") {
@@ -351,3 +352,6 @@ if (location.hostname === "localhost") {
 
 }
 
+if (localStorage.getItem("background-image")) {
+  document.body.style.setProperty("background-image", localStorage.getItem("background-image"));
+}
