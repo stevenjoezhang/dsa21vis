@@ -39,7 +39,7 @@ function loadMap(data) {
     .enter()
     .append("line")
     .classed("link", true)
-    .attr("stroke-width", 10)
+    .attr("stroke-width", 5)
     .attr("stroke", colors[0][1]);
 
   const circle = d3.select(".layout")
@@ -163,9 +163,17 @@ function dropHandler(ev) {
     const file = ev.dataTransfer.files[0];
     const reader = new FileReader();
     reader.onload = function(event) {
-      loadData(JSON.parse(event.target.result));
+      if (file.type === "application/json") {
+        loadData(JSON.parse(event.target.result));
+      } else {
+        document.body.style.setProperty("background-image", `url(${event.target.result})`);
+      }
     };
-    reader.readAsText(file);
+    if (file.type === "application/json") {
+      reader.readAsText(file);
+    } else {
+      reader.readAsDataURL(file);
+    }
   }
 }
 
