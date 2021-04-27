@@ -144,13 +144,13 @@ function loadMap(data) {
   function dragged(event, d) {
     d.fx = event.x;
     d.fy = event.y;
+
+    simulation.alpha(0.1).restart();
   }
 
   function dragended() {
     d3.select(this)
       .classed("active", false);
-
-    simulation.alpha(0.1).restart();
   }
 }
 
@@ -347,7 +347,7 @@ if (location.hostname === "localhost") {
 
   fetch("/battle.json")
     .then(response => response.json())
-    .then(data => loadData(data))
+    .then(loadData)
     .catch(() => { });
 
 }
