@@ -1,3 +1,5 @@
+console.log("PKU DSA 21 Stellar VIS. Powered by Mimi.");
+
 let width = window.innerWidth;
 let height = window.innerHeight;
 

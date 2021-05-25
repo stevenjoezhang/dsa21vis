@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>DSA 21 Battleground</title>
+  <title>PKU DSA 21 Stellar</title>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5/css/all.min.css">
   <script src="https://cdn.jsdelivr.net/npm/d3@6/dist/d3.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/d3-force@2/dist/d3-force.min.js"></script>
@@ -46,6 +46,10 @@
     .controller {
       right: 1em;
     }
+
+    svg text {
+      pointer-events: none;
+    }
   </style>
 </head>
 
@@ -57,7 +61,7 @@
     <p>将 JSON 数据文件拖至此处来加载</p>
   </div>
   <div class="menu menu-left">
-    <h1>DSA 21 Battleground <i class="fas fa-chess-rook"></i></h1>
+    <h1>PKU DSA 21 Stellar <i class="fas fa-chess-rook"></i></h1>
   </div>
   <div class="menu controller">
     Frame: <span class="frame">0/0</span>
@@ -65,7 +69,7 @@
     <span><i class="fas fa-3x fa-step-backward"></i></span>
     <span><i class="fas fa-3x fa-question-circle"></i></span>
   </div>
-  <script src="index.js"></script>
+  <script src="battleground.js"></script>
 </body>
 
 </html>
